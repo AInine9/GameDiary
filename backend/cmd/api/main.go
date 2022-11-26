@@ -1,6 +1,10 @@
 package main
 
 import (
+	"backend/cmd/api/config"
+	"backend/cmd/api/infrastructure/persistence"
+	"backend/cmd/api/interface/handler"
+	"backend/cmd/api/interface/usecase"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -30,9 +34,12 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	r.GET("/", func(c *gin.Context) {
-		c.String(200, "Hello World")
-	})
+	diaryPersistence := persistence.NewDiaryPersistence(config.Connect())
+	diaryUseCase := usecase.NewDiaryUseCase(diaryPersistence)
+	diaryHandler := handler.NewDiaryHandler(diaryUseCase)
+
+	r.POST("/startplaying", diaryHandler.StartPlaying)
+	r.POST("/endplaying", diaryHandler.EndPlaying)
 
 	r.Run(":8000")
 }
