@@ -1,22 +1,13 @@
 package main
 
 import (
-	"backend/cmd/api/config"
-	"backend/cmd/api/infrastructure/persistence"
-	"backend/cmd/api/interface/handler"
-	"backend/cmd/api/usecase"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 )
 
 func main() {
-	userPersistence := persistence.NewUserPersistence(config.Connect())
-	userUseCase := usecase.NewUserUseCase(userPersistence)
-	userHandler := handler.NewUserHandler(userUseCase)
-
 	router := httprouter.New()
-	router.GET("/api/users", userHandler.Index)
 
 	http.ListenAndServe(":8000", &Server{router})
 	log.Fatal(http.ListenAndServe(":8000", router))

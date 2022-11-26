@@ -155,3 +155,5 @@ db/data
 
 # Go temp files
 backend/tmp
+
+*.env

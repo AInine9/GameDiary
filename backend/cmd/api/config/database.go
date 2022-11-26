@@ -3,20 +3,18 @@ package config
 import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"log"
 	"os"
 	"time"
-
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 var (
-	db  *gorm.DB
+	db  sqlx.DB
 	err error
 )
 
-func Connect() *gorm.DB {
+func Connect() *sqlx.DB {
 	cfg := mysql.NewConfig()
 
 	cfg.ParseTime = true
@@ -29,8 +27,7 @@ func Connect() *gorm.DB {
 	cfg.Passwd = getPassword()
 	cfg.DBName = getDatabase()
 
-	db, err = gorm.Open("mysql", cfg.FormatDSN())
-	log.Print(cfg.FormatDSN())
+	db, err := sqlx.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		panic(err)
 	}
