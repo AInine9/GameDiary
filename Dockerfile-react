@@ -1,0 +1,14 @@
+FROM node:16.17.0-alpine
+
+CMD ["/bin/sh"]
+
+ENV PROJECT /frontend
+
+WORKDIR ${PROJECT}
+
+RUN apk update && \
+    npm install -g create-react-app
+
+ADD ${PROJECT}/package.json ${PROJECT}
+
+RUN npm install

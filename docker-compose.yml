@@ -1,0 +1,48 @@
+# docker-compose.yml
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: "./Dockerfile-react"
+    volumes:
+      - ./frontend:/frontend
+    command: >
+      sh -c "npm install && npm run start"
+    ports:
+      - "3000:3000"
+    container_name: "frontend"
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-golang
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend:/app
+    env_file:
+      - variables.env
+    depends_on:
+      - db
+    restart: on-failure
+
+  db:
+    image: mysql:8.0
+    volumes:
+      - './db/data:/var/lib/mysql'
+      - './db/my.cnf:/etc/mysql/conf.d/my.cnf'
+    env_file:
+      - variables.env
+    ports:
+      - '3306:3306'
+    restart: on-failure
+  
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./openapi.yml:/data/openapi.yml
+    environment:
+      SWAGGER_JSON: /data/openapi.yml
