@@ -1,30 +1,38 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"log"
-	"net/http"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"time"
 )
 
 func main() {
-	router := httprouter.New()
+	r := gin.Default()
 
-	http.ListenAndServe(":8000", &Server{router})
-	log.Fatal(http.ListenAndServe(":8000", router))
-}
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost",
+		},
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+		},
+		AllowHeaders: []string{
+			"Access-Control-Allow-Credentials",
+			"Access-Control-Allow-Headers",
+			"Content-Type",
+			"Content-Length",
+			"Accept-Encoding",
+			"Authorization",
+		},
+		AllowCredentials: true,
+		MaxAge:           24 * time.Hour,
+	}))
 
-type Server struct {
-	r *httprouter.Router
-}
+	r.GET("/", func(c *gin.Context) {
+		c.String(200, "Hello World")
+	})
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Access-Control-Allow-Origin", "https://example.com")
-	w.Header().Set("Access-Control-Allow-Methods", "GET")
-	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Add("Access-Control-Allow-Headers", "Origin")
-	w.Header().Add("Access-Control-Allow-Headers", "X-Requested-With")
-	w.Header().Add("Access-Control-Allow-Headers", "Accept")
-	w.Header().Add("Access-Control-Allow-Headers", "Accept-Language")
-	w.Header().Set("Content-Type", "application/json")
-	s.r.ServeHTTP(w, r)
+	r.Run(":8000")
 }
