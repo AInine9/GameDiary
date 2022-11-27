@@ -34,9 +34,15 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	diaryPersistence := persistence.NewDiaryPersistence(config.Connect())
-	diaryUseCase := usecase.NewDiaryUseCase(diaryPersistence)
-	diaryHandler := handler.NewDiaryHandler(diaryUseCase)
+	db := config.Connect()
+	defer db.Close()
+
+	gamePersistence := persistence.NewGamePersistence(db)
+	gameUseCase := usecase.NewGameUseCase(gamePersistence)
+
+	diaryPersistence := persistence.NewDiaryPersistence(db)
+	diaryUseCase := usecase.NewDiaryUseCase(diaryPersistence, gamePersistence)
+	diaryHandler := handler.NewDiaryHandler(diaryUseCase, gameUseCase)
 
 	r.POST("/startplaying", diaryHandler.StartPlaying)
 	r.POST("/endplaying", diaryHandler.EndPlaying)

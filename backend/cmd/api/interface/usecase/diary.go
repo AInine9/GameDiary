@@ -13,10 +13,11 @@ type DiaryUseCase interface {
 
 type diaryUseCase struct {
 	diaryRepository repository.DiaryRepository
+	gameRepository  repository.GameRepository
 }
 
-func NewDiaryUseCase(dr repository.DiaryRepository) DiaryUseCase {
-	return &diaryUseCase{diaryRepository: dr}
+func NewDiaryUseCase(dr repository.DiaryRepository, gr repository.GameRepository) DiaryUseCase {
+	return &diaryUseCase{diaryRepository: dr, gameRepository: gr}
 }
 
 func (du diaryUseCase) Create(userId int, gameId int) (err error) {
