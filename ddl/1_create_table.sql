@@ -1,8 +1,8 @@
 CREATE TABLE `users`
 (
-    `id`         int UNIQUE   NOT NULL,
-    `user_name`  varchar(255) NOT NULL,
-    `created_at` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `id`         bigint UNIQUE NOT NULL,
+    `user_name`  varchar(255)  NOT NULL,
+    `created_at` datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 );
 
@@ -18,7 +18,7 @@ CREATE TABLE `games`
 CREATE TABLE `diaries`
 (
     `id`               int      NOT NULL AUTO_INCREMENT,
-    `user_id`          int      NOT NULL,
+    `user_id`          bigint   NOT NULL,
     `game_id`          int(20) NOT NULL,
     `start_playing_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `end_playing_at`   datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
