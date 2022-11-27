@@ -39,6 +39,10 @@ func (dh diaryHandler) StartPlaying(ctx *gin.Context) {
 		if err != nil {
 			ctx.AbortWithError(500, err)
 		}
+		gameId, err = dh.gameUseCase.GetGameIdByName(gameName)
+		if err != nil {
+			ctx.AbortWithError(500, err)
+		}
 	}
 	err = dh.diaryUseCase.Create(userId, gameId)
 	if err != nil {
