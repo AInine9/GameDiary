@@ -1,32 +1,8 @@
-# golang-react-mysql-docker
+# GameDiary
+## Feature
+[GameDiaryBot](https://github.com/AInine9/GameDiaryBot)がDiscordのアクティビティステータスを監視
+ゲームの開始・終了日時を記録して、ゲーム日記をつけられるアプリ
 
 ## Stats
 
-- Go
-- React
-- MySQL
-
-## Tools
-
-- SwaggerUI
-- air (Hot reload for backend)
-
-## Setup
-
-Edit `variables.env`
-`docker-compose up -d`
-
-## Backend Architecture
-
-- config  
-  config management
-- domain/model  
-  ドメインモデル
-- domain/repository  
-  ドメインの振る舞い
-- infrastructure/persistence  
-  DB接続と処理
-- interface/handler  
-  HTTPリクエスト・レスポンスを扱う
-- usecase  
-  ユースケースに沿った処理
+[テンプレート](https://github.com/AInine9/golang-react-mysql-docker)と同じ
