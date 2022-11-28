@@ -1,7 +1,9 @@
 package handler
 
 import (
-	"backend/cmd/api/interface/usecase"
+	"backend/cmd/api/usecase"
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -15,10 +17,11 @@ type DiaryHandler interface {
 type diaryHandler struct {
 	diaryUseCase usecase.DiaryUseCase
 	gameUseCase  usecase.GameUseCase
+	userUseCase  usecase.UserUseCase
 }
 
-func NewDiaryHandler(du usecase.DiaryUseCase, gu usecase.GameUseCase) DiaryHandler {
-	return &diaryHandler{diaryUseCase: du, gameUseCase: gu}
+func NewDiaryHandler(du usecase.DiaryUseCase, gu usecase.GameUseCase, uu usecase.UserUseCase) DiaryHandler {
+	return &diaryHandler{diaryUseCase: du, gameUseCase: gu, userUseCase: uu}
 }
 
 func (dh diaryHandler) Index(ctx *gin.Context) {
@@ -28,6 +31,11 @@ func (dh diaryHandler) Index(ctx *gin.Context) {
 
 func (dh diaryHandler) StartPlaying(ctx *gin.Context) {
 	userId, _ := strconv.Atoi(ctx.Query("userId"))
+	if dh.userUseCase.CheckIsNewUser(userId) {
+		ctx.AbortWithError(401, errors.New(fmt.Sprintf("user: %d is not registered.", userId)))
+		return
+	}
+
 	gameName := ctx.Query("gameName")
 	gameId, err := dh.gameUseCase.GetGameIdByName(gameName)
 	if err != nil {
@@ -53,6 +61,11 @@ func (dh diaryHandler) StartPlaying(ctx *gin.Context) {
 
 func (dh diaryHandler) EndPlaying(ctx *gin.Context) {
 	userId, _ := strconv.Atoi(ctx.Query("userId"))
+	if dh.userUseCase.CheckIsNewUser(userId) {
+		ctx.AbortWithError(401, errors.New(fmt.Sprintf("user: %d is not registered.", userId)))
+		return
+	}
+
 	err := dh.diaryUseCase.EndPlaying(userId)
 	if err != nil {
 		ctx.AbortWithError(500, err)

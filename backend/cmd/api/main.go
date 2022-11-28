@@ -4,7 +4,7 @@ import (
 	"backend/cmd/api/config"
 	"backend/cmd/api/infrastructure/persistence"
 	"backend/cmd/api/interface/handler"
-	"backend/cmd/api/interface/usecase"
+	usecase2 "backend/cmd/api/usecase"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -38,11 +38,14 @@ func main() {
 	defer db.Close()
 
 	gamePersistence := persistence.NewGamePersistence(db)
-	gameUseCase := usecase.NewGameUseCase(gamePersistence)
+	gameUseCase := usecase2.NewGameUseCase(gamePersistence)
+
+	userPersistence := persistence.NewUserPersistence(db)
+	userUseCase := usecase2.NewUserUseCase(userPersistence)
 
 	diaryPersistence := persistence.NewDiaryPersistence(db)
-	diaryUseCase := usecase.NewDiaryUseCase(diaryPersistence, gamePersistence)
-	diaryHandler := handler.NewDiaryHandler(diaryUseCase, gameUseCase)
+	diaryUseCase := usecase2.NewDiaryUseCase(diaryPersistence, gamePersistence)
+	diaryHandler := handler.NewDiaryHandler(diaryUseCase, gameUseCase, userUseCase)
 
 	r.POST("/startplaying", diaryHandler.StartPlaying)
 	r.POST("/endplaying", diaryHandler.EndPlaying)

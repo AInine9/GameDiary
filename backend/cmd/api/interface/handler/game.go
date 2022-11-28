@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"backend/cmd/api/interface/usecase"
+	"backend/cmd/api/usecase"
 	"github.com/gin-gonic/gin"
 )
 
