@@ -58,6 +58,13 @@ func main() {
 	r.GET("/logout", authHandler.Logout)
 	r.POST("/startplaying", diaryHandler.StartPlaying)
 	r.POST("/endplaying", diaryHandler.EndPlaying)
+
+	authUserGroup := r.Group("/api")
+	authUserGroup.Use(LoginCheckMiddleware())
+	{
+		authUserGroup.GET("/diaries", diaryHandler.Index)
+	}
+
 	r.Run(":8000")
 }
 

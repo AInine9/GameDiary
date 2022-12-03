@@ -25,8 +25,6 @@ func NewDiaryHandler(du usecase.DiaryUseCase, gu usecase.GameUseCase, uu usecase
 }
 
 func (dh diaryHandler) Index(ctx *gin.Context) {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (dh diaryHandler) StartPlaying(ctx *gin.Context) {

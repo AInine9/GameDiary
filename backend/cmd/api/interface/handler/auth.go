@@ -4,6 +4,7 @@ import (
 	"backend/cmd/api/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
+	"github.com/stretchr/objx"
 	"strconv"
 )
 
@@ -35,10 +36,12 @@ func (ah authHandler) CompleteAuth(ctx *gin.Context) {
 			ctx.AbortWithError(500, err)
 			return
 		}
-		// TODO 新規ユーザ登録後の処理
-	} else {
-		// TODO 既存ユーザログイン後の処理
 	}
+	authCookieValue := objx.New(map[string]interface{}{
+		"user_id":   userId,
+		"user_name": userName,
+	}).MustBase64()
+	ctx.SetCookie("auth", authCookieValue, 86400*30, "/", "localhost", false, true)
 }
 
 func (ah authHandler) BeginAuth(ctx *gin.Context) {
@@ -47,5 +50,5 @@ func (ah authHandler) BeginAuth(ctx *gin.Context) {
 
 func (ah authHandler) Logout(ctx *gin.Context) {
 	gothic.Logout(ctx.Writer, ctx.Request)
-	// TODO ログアウト後の処理
+	ctx.SetCookie("auth", "", -1, "/", "localhost", false, true)
 }
