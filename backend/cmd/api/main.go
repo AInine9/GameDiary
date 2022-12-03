@@ -4,15 +4,19 @@ import (
 	"backend/cmd/api/config"
 	"backend/cmd/api/infrastructure/persistence"
 	"backend/cmd/api/interface/handler"
-	usecase2 "backend/cmd/api/usecase"
+	"backend/cmd/api/usecase"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/discord"
+	"net/http"
+	"os"
 	"time"
 )
 
 func main() {
 	r := gin.Default()
-
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
 			"http://localhost",
@@ -38,17 +42,30 @@ func main() {
 	defer db.Close()
 
 	gamePersistence := persistence.NewGamePersistence(db)
-	gameUseCase := usecase2.NewGameUseCase(gamePersistence)
+	gameUseCase := usecase.NewGameUseCase(gamePersistence)
 
 	userPersistence := persistence.NewUserPersistence(db)
-	userUseCase := usecase2.NewUserUseCase(userPersistence)
+	userUseCase := usecase.NewUserUseCase(userPersistence)
 
 	diaryPersistence := persistence.NewDiaryPersistence(db)
-	diaryUseCase := usecase2.NewDiaryUseCase(diaryPersistence, gamePersistence)
+	diaryUseCase := usecase.NewDiaryUseCase(diaryPersistence, gamePersistence)
 	diaryHandler := handler.NewDiaryHandler(diaryUseCase, gameUseCase, userUseCase)
 
+	authHandler := handler.NewAuthHandler(userUseCase)
+
+	r.GET("/auth", authHandler.BeginAuth)
+	r.GET("/auth/callback", authHandler.CompleteAuth)
+	r.GET("/logout", authHandler.Logout)
 	r.POST("/startplaying", diaryHandler.StartPlaying)
 	r.POST("/endplaying", diaryHandler.EndPlaying)
-
 	r.Run(":8000")
+}
+
+func init() {
+	gothic.GetProviderName = func(req *http.Request) (string, error) {
+		return "discord", nil
+	}
+	goth.UseProviders(
+		discord.New(os.Getenv("DISCORD_CLIENT_ID"), os.Getenv("DISCORD_SECRET"), os.Getenv("CALLBACK_URL"), discord.ScopeIdentify),
+	)
 }

@@ -36,9 +36,9 @@ func (up *userPersistence) Create(user *model.User) (err error) {
 func (up *userPersistence) IsNewUser(userId int) bool {
 	db := up.Conn
 
-	_, err := db.Exec("SELECT * FROM users WHERE id = ? LIMIT 1", userId)
-	if err == nil {
-		return true
+	rows, _ := db.Queryx("SELECT * FROM users WHERE id = ? LIMIT 1", userId)
+	if rows.Rows.Next() {
+		return false
 	}
-	return false
+	return true
 }
